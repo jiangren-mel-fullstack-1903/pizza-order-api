@@ -15,33 +15,47 @@ import {
   put,
   del,
   requestBody,
+  HttpErrors,
 } from '@loopback/rest';
-import {Topping} from '../models';
-import {ToppingRepository} from '../repositories';
+import { Topping } from '../models';
+import { ToppingRepository } from '../repositories';
 
 export class ToppingController {
   constructor(
     @repository(ToppingRepository)
-    public toppingRepository : ToppingRepository,
-  ) {}
+    public toppingRepository: ToppingRepository,
+  ) { }
 
   @post('/toppings', {
     responses: {
       '200': {
         description: 'Topping model instance',
-        content: {'application/json': {schema: {'x-ts-type': Topping}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Topping } } },
       },
     },
   })
-  async create(@requestBody() topping: Topping): Promise<Topping> {
-    return await this.toppingRepository.create(topping);
+  async create(@requestBody() topping: Topping): Promise<String> {
+    // existing name?
+    let existedName = await this.toppingRepository.find({
+      where: {
+        name: topping.name
+      }
+    });
+    if (existedName) {
+      throw new HttpErrors.BadRequest("name existed");
+    }
+
+    if (!topping.name) {
+      throw new HttpErrors.BadRequest("name is required");
+    }
+    return "await this.toppingRepository.create(topping)";
   }
 
   @get('/toppings/count', {
     responses: {
       '200': {
         description: 'Topping model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -57,7 +71,7 @@ export class ToppingController {
         description: 'Array of Topping model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Topping}},
+            schema: { type: 'array', items: { 'x-ts-type': Topping } },
           },
         },
       },
@@ -73,7 +87,7 @@ export class ToppingController {
     responses: {
       '200': {
         description: 'Topping PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -88,7 +102,7 @@ export class ToppingController {
     responses: {
       '200': {
         description: 'Topping model instance',
-        content: {'application/json': {schema: {'x-ts-type': Topping}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Topping } } },
       },
     },
   })
