@@ -1,6 +1,7 @@
-import {Entity, model, property} from '@loopback/repository';
+import { Entity, model, property } from '@loopback/repository';
+import { OrderItem } from './order-item.model';
 
-@model({settings: {}})
+@model({ settings: {} })
 export class Order extends Entity {
   @property({
     type: 'string',
@@ -8,12 +9,11 @@ export class Order extends Entity {
   })
   id?: string;
 
-  @property({
-    type: 'array',
-    itemType: 'object',
-    required: true,
+
+  @property.array(OrderItem, {
+    name: 'orderItems'
   })
-  toppings: object[];
+  toppings: OrderItem[];
 
   @property({
     type: 'date',
