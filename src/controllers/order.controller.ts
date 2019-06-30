@@ -16,32 +16,59 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {Order} from '../models';
-import {OrderRepository} from '../repositories';
+import { Order, Customer } from '../models';
+import { OrderRepository } from '../repositories';
+import { inject } from '@loopback/core';
+import { CustomerService } from '../services';
 
 export class OrderController {
   constructor(
     @repository(OrderRepository)
-    public orderRepository : OrderRepository,
-  ) {}
+    protected orderRepository: OrderRepository,
+    @inject('services.CustomerService')
+    protected customerService: CustomerService,
+  ) { }
 
   @post('/orders', {
     responses: {
       '200': {
         description: 'Order model instance',
-        content: {'application/json': {schema: {'x-ts-type': Order}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Order } } },
       },
     },
   })
   async create(@requestBody() order: Order): Promise<Order> {
+    // get customer from the User micro service
+    let customer = await this.customerService.getById(order.customerId);
+    console.log('customer >>>>>>>>>>>>', customer);
+    order.customerName = customer.name;
     return await this.orderRepository.create(order);
+  }
+
+  @post('/orders/updateCustomer', {
+    responses: {
+      '200': {
+        description: 'Order model instance',
+        content: { 'application/json': { schema: { 'x-ts-type': Order } } },
+      },
+    },
+  })
+  async updateCustomer(@requestBody() customer: Customer): Promise<void> {
+    // get customer from the User micro service
+    //  let orders: Order[] = await this.orderRepository.find({where: {
+    //    customerId: customer.id
+    //  }});
+    //  orders.foreach(aOrder => {
+    //     aOrder.customerName = customer.name;
+    //     this.orderRepository.save(aOrder);
+    //  })
   }
 
   @get('/orders/count', {
     responses: {
       '200': {
         description: 'Order model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -57,7 +84,7 @@ export class OrderController {
         description: 'Array of Order model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Order}},
+            schema: { type: 'array', items: { 'x-ts-type': Order } },
           },
         },
       },
@@ -73,7 +100,7 @@ export class OrderController {
     responses: {
       '200': {
         description: 'Order PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -88,7 +115,7 @@ export class OrderController {
     responses: {
       '200': {
         description: 'Order model instance',
-        content: {'application/json': {schema: {'x-ts-type': Order}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Order } } },
       },
     },
   })

@@ -16,6 +16,16 @@ export class Order extends Entity {
   toppings: OrderItem[];
 
   @property({
+    type: 'string',
+  })
+  customerId: string;
+
+  @property({
+    type: 'string',
+  })
+  customerName?: string;
+
+  @property({
     type: 'date',
   })
   createdTime?: string;
