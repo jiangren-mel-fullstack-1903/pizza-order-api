@@ -34,21 +34,22 @@ export class ToppingController {
       },
     },
   })
-  async create(@requestBody() topping: Topping): Promise<String> {
-    // existing name?
-    let existedName = await this.toppingRepository.find({
+  async create(@requestBody() topping: Topping): Promise<Topping> {
+    console.log('create a topping, name ======>>>>>>', topping.name);
+    let existedNames: Topping[] = await this.toppingRepository.find({
       where: {
         name: topping.name
       }
     });
-    if (existedName) {
+    console.log('create a topping, existedName ==========>>>>>>', existedNames);
+    if (existedNames && existedNames.length > 0) {
       throw new HttpErrors.BadRequest("name existed");
     }
 
-    if (!topping.name) {
-      throw new HttpErrors.BadRequest("name is required");
-    }
-    return "await this.toppingRepository.create(topping)";
+    // if (!topping.name) {
+    //   throw new HttpErrors.BadRequest("name is required");
+    // }
+    return await this.toppingRepository.create(topping);
   }
 
   @get('/toppings/count', {
