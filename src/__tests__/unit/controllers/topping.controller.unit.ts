@@ -11,7 +11,7 @@ import { ToppingRepository } from '../../../repositories';
 import { givenTopping } from '../../helpers';
 
 describe('ToppingController', () => {
-  let productRepo: StubbedInstanceWithSinonAccessor<ToppingRepository>;
+  let toppingRepo: StubbedInstanceWithSinonAccessor<ToppingRepository>;
 
   /*
   =============================================================================
@@ -73,7 +73,7 @@ describe('ToppingController', () => {
       sinon.assert.called(find);
     });
 
-    it('returns empty list if no products exist', async () => {
+    it('returns empty list if no toppings exist', async () => {
       const expected: Topping[] = [];
       find.resolves(expected);
       expect(await controller.find()).to.eql(expected);
@@ -114,7 +114,7 @@ describe('ToppingController', () => {
   });
 
   function resetRepositories() {
-    productRepo = createStubInstance(ToppingRepository);
+    toppingRepo = createStubInstance(ToppingRepository);
     aTopping = givenTopping();
     aToppingWithId = givenTopping({
       id: "1",
@@ -139,8 +139,8 @@ describe('ToppingController', () => {
       updateById,
       replaceById,
       deleteById,
-    } = productRepo.stubs);
+    } = toppingRepo.stubs);
 
-    controller = new ToppingController(productRepo);
+    controller = new ToppingController(toppingRepo);
   }
 });
